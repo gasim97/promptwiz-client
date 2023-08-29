@@ -1,6 +1,5 @@
 import json
 import requests
-import time
 from dataclasses import dataclass
 from typing import Any, Dict, List, Optional, Tuple, Union
 
@@ -37,27 +36,18 @@ class PromptWizClient:
 
     PROMPT_WIZ_URL = "https://promptwiz.co.uk"
     PROMPT_WIZ_API_URL = f"{PROMPT_WIZ_URL}/api/v0.1"
-    PROMPT_WIZ_EVALUATE_API_URL = f"{PROMPT_WIZ_API_URL}/evaluate"
+    PROMPT_WIZ_EVALUATE_API_URL = f"{PROMPT_WIZ_API_URL}/evaluate/"
 
-    def __init__(self, api_key: str = None):
+    def __init__(self, api_key: Optional[str] = None):
         self._api_key = api_key
-        self._last_request_time = 0
     
     @property
-    def api_key(self):
+    def api_key(self) -> str:
         return self._api_key
     
     @api_key.setter
     def api_key(self, api_key: str) -> None:
         self._api_key = api_key
-    
-    @property
-    def last_request_time(self) -> float:
-        return self._last_request_time
-    
-    @last_request_time.setter
-    def last_request_time(self, last_request_time: float) -> None:
-        self._last_request_time = last_request_time
 
     def __call__(
         self, 
@@ -91,14 +81,12 @@ class PromptWizClient:
                 A HTTP status code
         """
         request_payload = dict(
-            apiKey=api_key or self._api_key,
-            querySet=json.dumps([query.as_dict() for query in query_set])
+            apiKey=api_key or self._api_key or "",
+            querySet=json.dumps([query.as_dict() for query in query_set]),
         )
         if accept_partial is not None:
             request_payload["acceptPartial"] = accept_partial
-        start_time = time.time()
         response = requests.post(self.PROMPT_WIZ_EVALUATE_API_URL, data=request_payload)
-        self.last_request_time = time.time() - start_time
         try:
             response_payload = json.loads(response.text)
             return response_payload.get("resultSet", []), response_payload.get("errors"), response.status_code

@@ -1,9 +1,0 @@
-README.md
-setup.py
-promptwiz/__init__.py
-promptwiz/client.py
-promptwizclient.egg-info/PKG-INFO
-promptwizclient.egg-info/SOURCES.txt
-promptwizclient.egg-info/dependency_links.txt
-promptwizclient.egg-info/requires.txt
-promptwizclient.egg-info/top_level.txt
