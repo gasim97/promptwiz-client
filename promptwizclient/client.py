@@ -1,57 +1,66 @@
+from __future__ import annotations
+
 import json
 import requests
-from dataclasses import dataclass
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any, Dict, List, Optional, Tuple
 
-@dataclass
-class PromptWizQuery:
-    """
-    A PromptWiz Query
-        
-    Parameters
-    ----------
-        prompt_id : :class:`int`\n
-            The Prompt Wiz prompt ID\n
-        args : Optional[Dict[:class:`str`, :class:`str`]]\n
-            The arguments for the prompt parameters, or `None` if the prompt does\n
-            not have any parameters\n
-        link_id : Optional[:class:`int`]\n
-            A unique ID for the query. This ID will be echoed back by Prompt Wiz in results\n
-            to allow linking queries in a query set to results in a result set
-    """
-    prompt_id: int
-    args: Optional[Dict[str, str]] = None
-    link_id: Optional[Union[int, str]] = None
-
-    def as_dict(self):
-        query = dict(promptId=self.prompt_id)
-        if self.args:
-            query["args"] = self.args
-        if self.link_id:
-            query["linkId"] = self.link_id
-        return query
+from promptwizclient.query import Query
 
 
-class PromptWizClient:
+_SUPPORTED_API_VERSIONS = ["0.1"]
 
-    PROMPT_WIZ_URL = "https://promptwiz.co.uk"
-    PROMPT_WIZ_API_URL = f"{PROMPT_WIZ_URL}/api/v0.1"
-    PROMPT_WIZ_EVALUATE_API_URL = f"{PROMPT_WIZ_API_URL}/evaluate/"
+DEFAULT_API_VERSION = "0.1"
+DEFAULT_PROMPT_WIZ_URL = "https://promptwiz.co.uk"
 
-    def __init__(self, api_key: Optional[str] = None):
-        self._api_key = api_key
+
+class _PromptWizClient:
+    def __init__(self):
+        self._api_key = None
+        self._api_version = DEFAULT_API_VERSION
+        self._prompt_wiz_url = DEFAULT_PROMPT_WIZ_URL
     
     @property
     def api_key(self) -> str:
+        """The PromptWiz API key used in requests"""
         return self._api_key
     
     @api_key.setter
     def api_key(self, api_key: str) -> None:
         self._api_key = api_key
+    
+    @property
+    def api_version(self) -> str:
+        """The PromptWiz API version used in requests"""
+        return self._api_version
+    
+    @api_version.setter
+    def api_version(self, api_version: str | float) -> None:
+        if isinstance(api_version, float):
+            api_version = str(api_version)
+        if api_version not in _SUPPORTED_API_VERSIONS:
+            raise ValueError(f"Unsupported PromptWiz API version: {api_version}")
+        self._api_version = api_version
+    
+    @property
+    def prompt_wiz_url(self) -> str:
+        """The PromptWiz URL targeted in requests"""
+        return self._prompt_wiz_url
+    
+    @prompt_wiz_url.setter
+    def prompt_wiz_url(self, prompt_wiz_url: str) -> None:
+        self._prompt_wiz_url = prompt_wiz_url
+    
+    @property
+    def _prompt_wiz_api_url(self) -> str:
+        return f"{self._prompt_wiz_url}/api/v{self.api_version}"
+    
+    @property
+    def _prompt_wiz_evaluate_api_url(self) -> str:
+        return f"{self._prompt_wiz_api_url}/evaluate/"
 
     def __call__(
         self, 
-        query_set: List[PromptWizQuery], 
+        query_set: List[Query], 
         accept_partial: Optional[bool] = None, 
         api_key: Optional[str] = None
     ) -> Tuple[List[Dict[str, Any]], Optional[List[Dict[str, str]]], int]:
@@ -60,8 +69,8 @@ class PromptWizClient:
         
         Parameters
         ----------
-            query_set : List[:class:`PromptWizQuery`]\n
-                A list of Prompt Wiz queries to be evaluated, see :class:`PromptWizQuery`\n
+            query_set : List[:class:`promptwiz.Query`]\n
+                A list of Prompt Wiz queries to be evaluated, see :class:`promptwiz.Query`\n
             accept_partial : Optional[:class:`bool`]\n
                 A boolean indicating whether partial result sets are accepted.\n
                 A partial result set is one that does not contain a result for\n
@@ -86,7 +95,7 @@ class PromptWizClient:
         )
         if accept_partial is not None:
             request_payload["acceptPartial"] = accept_partial
-        response = requests.post(self.PROMPT_WIZ_EVALUATE_API_URL, data=request_payload)
+        response = requests.post(self._prompt_wiz_evaluate_api_url, data=request_payload)
         try:
             response_payload = json.loads(response.text)
             return response_payload.get("resultSet", []), response_payload.get("errors"), response.status_code
@@ -101,3 +110,6 @@ class PromptWizClient:
                 ], 
                 response.status_code,
             )
+
+
+Client = _PromptWizClient()
