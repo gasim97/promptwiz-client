@@ -18,11 +18,10 @@ class Query:
             A unique ID for the query. This ID will be echoed back by Prompt Wiz in results\n
             to allow linking queries in a query set to results in a result set\n
         model_api_key : Optional[:class:`str`]\n
-            An optional model service (e.g. OpenAI) API key to use when requesting evaluation\n
-            for this particular query. If this field is provided, the API key must be updated\n
-            to the relevant model service API key if the model is changed in a new prompt version\n
-            If this field is not provided, PromptWiz will use the relevant model service API key\n
-            saved in your organisations API keys
+            An API key for the model service (e.g. OpenAI) to be queried. This allows for\n
+            an override to the organisation’s API key saved under the API Keys page in the PromptWiz app.\n
+            Please keep in mind if this parameter is used, the value may have to be updated if the model\n
+            service is changed in a newer prompt version
     """
     prompt_id: int
     args: Optional[Dict[str, str]] = None
