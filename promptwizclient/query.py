@@ -11,8 +11,8 @@ class Query:
     ----------
         prompt_id : :class:`int`\n
             The Prompt Wiz prompt ID\n
-        args : Optional[Dict[:class:`str`, :class:`str`]]\n
-            The arguments for the prompt parameters, or `None` if the prompt does\n
+        variables : Optional[Dict[:class:`str`, :class:`str`]]\n
+            The variables for the prompt parameters, or `None` if the prompt does\n
             not have any parameters\n
         link_id : Optional[:class:`int`]\n
             A unique ID for the query. This ID will be echoed back by Prompt Wiz in results\n
@@ -24,14 +24,14 @@ class Query:
             service is changed in a newer prompt version
     """
     prompt_id: int
-    args: Optional[Dict[str, str]] = None
+    variables: Optional[Dict[str, str]] = None
     link_id: Optional[Union[int, str]] = None
     model_api_key: Optional[str] = None
 
     def as_dict(self):
         query = dict(promptId=self.prompt_id)
-        if self.args:
-            query["args"] = self.args
+        if self.variables:
+            query["variables"] = self.variables
         if self.link_id:
             query["linkId"] = self.link_id
         if self.model_api_key:

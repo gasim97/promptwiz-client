@@ -22,8 +22,8 @@ import promptwizclient as pwc
 pwc.Client.api_key = "<PROMPT_WIZ_API_KEY>"
 
 query_set = [
-    pwc.Query(prompt_id=7, args=dict(EXAMPLE_PARAM_1="PARAM 1 Value 1", EXAMPLE_PARAM_2="PARAM 2 Value 1")),
-    pwc.Query(prompt_id=7, args=dict(EXAMPLE_PARAM_1="PARAM 1 Value 2", EXAMPLE_PARAM_2="PARAM 2 Value 2")),
+    pwc.Query(prompt_id=7, variables=dict(EXAMPLE_VARIABLE_1="VARIABLE 1 Value 1", EXAMPLE_VARIABLE_2="VARIABLE 2 Value 1")),
+    pwc.Query(prompt_id=7, variables=dict(EXAMPLE_VARIABLE_1="VARIABLE 1 Value 2", EXAMPLE_VARIABLE_2="VARIABLE 2 Value 2")),
 ]
 results, errors, status_code = pwc.Client(query_set=query_set)
 ```
@@ -38,13 +38,13 @@ The client provides an interface to build and make requests following the API re
 |----------------------------	|----------	|------------  |
 | apiKey<br>_String_         	| Yes      	| PromptWiz API Key available under <a href="https://promptwiz.co.uk/api_keys/">API Keys page</a> |
 | querySet<br>_Array_        	| Yes      	| A list of queries, each having the fields listed in Query Fields below |
-| acceptPartial<br>_Boolean_ 	| No       	| Indicates whether partially successful queries can be returned. When set to true the response will fail if ANY query for querySet fails.<br><br>**If not provided, this field is defaulted to False.** |
+| acceptPartial<br>_Boolean_ 	| No       	| Indicates whether partially successful queries can be returned. When set to false the response will fail if ANY query for querySet fails.<br><br>**If not provided, this field is defaulted to False.** |
 
 ### Query Fields
 
-| Field                           	| Required 	| Description  |
-|---------------------------------	|----------	|------------  |
-| promptId<br>_Integer_           	| Yes      	| The ID of the prompt, available on the PromptWiz web application |
-| args<br>_String to String JSON_ 	| Yes/No   	| An JSON of key-value pairs.<br><br>The keys are the prompt parameters and the values are the assigned values.<br><br>A value must be assigned to every prompt parameter. <br><br>**This field can be omitted only if the prompt has no parameters.** |
-| linkId<br>_Integer or String_   	| No       	| An ID used to link a result in the response to a query in the request. This simplifies matching request on your backend if you’re making more than 1 request at a time.<br><br>If this field is omitted, PromptWiz will assign each query its index as the link ID.<br><br>If this field is provided in any query in the query set, it must be provided on all.<br><br>If this field is provided in the queries, it must be unique across the queries. |
-| modelApiKey<br>_String_         	| No       	| An API key for the model service (e.g. OpenAI) to be queried. This allows for an override to the organisation’s API key saved under the <a href="https://promptwiz.co.uk/api_keys/">API Keys page</a>. Please keep in mind if this parameter is used, the value may have to be updated if the model service is changed in a newer prompt version. |
+| Field                           	    | Required 	| Description  |
+|--------------------------------------	|----------	|------------  |
+| promptId<br>_Integer_           	    | Yes      	| The ID of the prompt, available on the PromptWiz web application |
+| variables<br>_String to String JSON_ 	| Yes/No   	| An JSON of key-value pairs.<br><br>The keys are the prompt variables and the values are their assigned values.<br><br>A value must be assigned to every prompt variable. <br><br>**This field can be omitted only if the prompt has no variables.** |
+| linkId<br>_Integer or String_   	    | No       	| An ID used to link a result in the response to a query in the request. This simplifies matching request on your backend if you’re making more than 1 request at a time.<br><br>If this field is omitted, PromptWiz will assign each query its index as the link ID.<br><br>If this field is provided in any query in the query set, it must be provided on all.<br><br>If this field is provided in the queries, it must be unique across the queries. |
+| modelApiKey<br>_String_         	    | No       	| An API key for the model service (e.g. OpenAI) to be queried. This allows for an override to the organisation’s API key saved under the <a href="https://promptwiz.co.uk/api_keys/">API Keys page</a>. Please keep in mind if this parameter is used, the value may have to be updated if the model service is changed in a newer prompt version. |
