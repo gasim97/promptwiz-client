@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='promptwizclient', 
-    version='0.1.16', 
+    version='0.1.17', 
     packages=find_packages(), 
     author='Prompt Wiz', 
     author_email='', 

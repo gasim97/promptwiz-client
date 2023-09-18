@@ -91,11 +91,11 @@ class _PromptWizClient:
         """
         request_payload = dict(
             apiKey=api_key or self._api_key or "",
-            querySet=json.dumps([query.as_dict() for query in query_set]),
+            querySet=[query.as_dict() for query in query_set],
         )
         if accept_partial is not None:
             request_payload["acceptPartial"] = accept_partial
-        response = requests.post(self._prompt_wiz_evaluate_api_url, data=request_payload)
+        response = requests.post(self._prompt_wiz_evaluate_api_url, json=request_payload)
         try:
             response_payload = json.loads(response.text)
             return response_payload.get("resultSet", []), response_payload.get("errors"), response.status_code

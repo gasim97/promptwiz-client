@@ -21,12 +21,15 @@ class Query:
             An API key for the model service (e.g. OpenAI) to be queried. This allows for\n
             an override to the organisation’s API key saved under the API Keys page in the PromptWiz app.\n
             Please keep in mind if this parameter is used, the value may have to be updated if the model\n
-            service is changed in a newer prompt version
+            service is changed in a newer prompt version\n
+        results_size : Optional[:class:`str`]\n
+            The number of results to generate
     """
     prompt_id: int
     variables: Optional[Dict[str, str]] = None
     link_id: Optional[Union[int, str]] = None
     model_api_key: Optional[str] = None
+    results_size: Optional[int] = None
 
     def as_dict(self):
         query = dict(promptId=self.prompt_id)
@@ -36,4 +39,6 @@ class Query:
             query["linkId"] = self.link_id
         if self.model_api_key:
             query["modelApiKey"] = self.model_api_key
+        if self.results_size:
+            query["resultsSize"] = self.results_size
         return query
